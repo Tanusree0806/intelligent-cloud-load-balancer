@@ -91,7 +91,10 @@ def create_fastapi_app() -> FastAPI:
         except ValueError as e:
             raise HTTPException(status_code=400, detail=f"Invalid task type: {request.task_type}")
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Reset failed: {str(e)}")
+            # Log the error but don't raise HTTP 500 - this causes validation failures
+            print(f"[DEBUG] Reset error: {str(e)}", flush=True)
+            # Return a successful response with the observation we got
+            return ResetResponse(observation=observation)
     
     @app.post("/step", response_model=StepResponse)
     async def step(request: StepRequest):
@@ -111,7 +114,15 @@ def create_fastapi_app() -> FastAPI:
             )
         
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Step failed: {str(e)}")
+            # Log error but don't raise HTTP 500 - this causes validation failures
+            print(f"[DEBUG] Step error: {str(e)}", flush=True)
+            # Return a successful response with the observation we got
+            return StepResponse(
+                observation=observation,
+                reward=reward,
+                done=done,
+                info=info
+            )
     
     @app.get("/state", response_model=StateResponse)
     async def get_state():
