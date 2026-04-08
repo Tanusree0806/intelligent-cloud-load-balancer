@@ -15,10 +15,11 @@ dependencies = [
     "numpy",
     "openai",
     "pyyaml",
+    "openenv-core>=0.2.0",
 ]
 
-[project.optional-dependencies]
-dev = ["pytest", "httpx"]
+[project.scripts]
+server = "server.app:app"
 
 [tool.setuptools.packages.find]
 where = ["."]
